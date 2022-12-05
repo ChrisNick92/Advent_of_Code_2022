@@ -1,7 +1,8 @@
 # %%
 """ Idea: Every crate can be represented as a stack """
 import itertools
-
+import re
+p = re.compile(r'\d+') # Find digits in a string
 class Stack():
     
     def __init__(self, id: int):
@@ -51,40 +52,71 @@ def initialize_stacks() -> dict:
     for s in stack_dict.values():
         s.reverse_stack()
     return stack_dict
-# %% Part 1
-stack_dict = initialize_stacks()
 
-for s in stack_dict.values():
-    print(s)
-
-# %% Solving Part 1
-import re 
-p = re.compile(r'\d+') # find digits in a string
-
-with open('input.txt') as f:
-    for line in itertools.islice(f,10,None,1):
-        t = list(map(int, p.findall(line)))
-        for j in range(t[0]):
-            stack_dict[t[2]].push(stack_dict[t[1]].pop())
-
-# %% Print Final State of Stacks
-for s in stack_dict.values():
-    print(s)
-# %% Part 2 - Just Push Crates in Reverse order
-
-stack_dict = initialize_stacks()
-for s in stack_dict.values():
-    print(s)
-# %%
-
-with open('input.txt') as f:
-    for line in itertools.islice(f,10,None,1):
-        t = list(map(int, p.findall(line)))
-        crates = [stack_dict[t[1]].pop() for _ in range(t[0])]
-        for crate in crates[::-1]:
-            stack_dict[t[2]].push(crate)
-# %% Print Final State of Stacks
-for s in stack_dict.values():
-    print(s)
+def part1(stack_dict):
+    with open('input.txt') as f:
+        for line in itertools.islice(f,10,None,1):
+            t = list(map(int, p.findall(line)))
+            for j in range(t[0]):
+                stack_dict[t[2]].push(stack_dict[t[1]].pop())
 
 # %%
+def part2(stack_dict):
+    with open('input.txt') as f:
+        for line in itertools.islice(f,10,None,1):
+            t = list(map(int, p.findall(line)))
+            crates = [stack_dict[t[1]].pop() for _ in range(t[0])]
+            for crate in crates[::-1]:
+                stack_dict[t[2]].push(crate)
+
+def write_results():
+    f = open('results.txt', 'w')
+    f.write("Initial Stack States\n\n")
+    stack_dict = initialize_stacks()
+    for q in stack_dict.values():
+        f.write(str(q) + "\n")
+    f.write("\n\n")
+    f.write(f"{5*'-'}> Part 1 <{5*'-'}\n")
+    part1(stack_dict=stack_dict)
+    f.write("Final State:\n")
+    for q in stack_dict.values():
+        f.write(str(q)+"\n")
+    s = ""
+    for q in stack_dict.values():
+        s += q.pop()
+    f.write(f"\nAnswer: {s}\n")
+    f.write("\n\n")
+    f.write(f"{5*'-'}> Part 2 <{5*'-'}\n")
+    stack_dict = initialize_stacks()
+    part2(stack_dict=stack_dict)
+    f.write("Final State:\n")
+    for q in stack_dict.values():
+        f.write(str(q)+"\n")
+    s = ""
+    for q in stack_dict.values():
+        s += q.pop()
+    f.write(f"\nAnswer: {s}\n")
+    f.close()
+                
+
+# %%
+
+def main():
+    # Part 1
+    stack_dict = initialize_stacks()
+    part1(stack_dict=stack_dict)
+    s = ""
+    for q in stack_dict.values():
+        s += q.pop()
+    print(f"Answer for Part1: {s}")
+    # Part 2
+    s = ""
+    stack_dict = initialize_stacks()
+    part2(stack_dict=stack_dict)
+    for q in stack_dict.values():
+        s += q.pop()
+    print(f"Answer for Part2: {s}")
+
+if __name__ == '__main__':
+    main()
+    # write_results()
