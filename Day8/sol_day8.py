@@ -80,10 +80,68 @@ def write_visible_trees(visible_trees: set, grid_shape: Tuple[int,int],
     f.writelines(lines)
     f.close()
 
+def scenic_score(tree_coordinates: Tuple[int,int],
+                 grid_shape: Tuple[int,int]) -> int:
+    (i,j), (M,N) = tree_coordinates, grid_shape
+    
+    row = list(map(int, get_row(num_row= i)))
+    col = list(map(int, get_col(num_col=j)))
+    tree_height = row[j-1]
+    
+    left,right,top,down = 0,0,0,0
+    # I know the following looks bad
+    step = 1
+    d = {'Left_Max': True, 'Right_Max': True, 
+         'Top_Max': True, 'Down_Max': True}
+    
+    while condition(i,j,M,N,step):
+        if d['Left_Max'] and j-step >=1:
+            if row[j-step-1] >= tree_height:
+                left += 1
+                d['Left_Max'] = False
+            else:
+                left +=1
+        if d['Down_Max'] and i+step <= M:
+            if col[i+step -1] >= tree_height:
+                down += 1
+                d['Down_Max'] = False
+            else:
+                down += 1
+        if d['Top_Max'] and i-step >= 1:
+            if col[i-step -1] >= tree_height:
+                top += 1
+                d['Top_Max'] = False
+            else:
+                top +=1
+        if d['Right_Max'] and j+step <= N:
+            if row[j+step -1] >= tree_height:
+                right +=1
+                d['Right_Max'] = False
+            else:
+                right += 1
+        step += 1
+    
+    return left*top*right*down
+
+def condition(i,j,M,N,step):
+    return i+step <= M or i-step >= 1 or j+step <= N or j-step >= 1
+
+
+def part2():
+    M,N = get_grid_shape()
+    m = 0
+    for i in range(1,M+1):
+        for j in range(1, N+1):
+            m = max(m, scenic_score((i,j), (M,N)))
+    return m
+
 # %%
 
-visible_trees = part1()
-# %%
-write_visible_trees(visible_trees, get_grid_shape(),
-                    file = 'VisibleTrees.txt')
-# %%
+if __name__ == '__main__':
+    
+    visible_trees = part1()
+    m = part2()
+    # write_visible_trees(visible_trees, get_grid_shape(),
+    #                     file = 'VisibleTrees.txt')
+    print(f"Part 1 Answer: {len(visible_trees)}")
+    print(f"Part 2 Answer: {m}")
