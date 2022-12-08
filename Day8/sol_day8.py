@@ -6,8 +6,8 @@ def read_data(file: str = 'input.txt'):
         for line in f:
             yield line.rstrip("\n")
             
-def get_grid_shape():
-    data = read_data()
+def get_grid_shape(file: str = 'input.txt'):
+    data = read_data(file)
     rows, cols = 1, len(next(data))
     for line in data:
         rows += 1
@@ -39,13 +39,13 @@ def find_visible_trees(tree_heights: List, on_row: Optional[int] = None,
     coordinates on the grid
     """
     visible_trees = set()
-    curr_height = 0
+    curr_height = -1
     N = len(tree_heights)
     for i, height in enumerate(tree_heights):
         if height > curr_height:
             curr_height = height
             visible_trees.add((on_row, i+1)) if on_row else visible_trees.add((i+1, on_col))
-    curr_height = 0
+    curr_height = -1
     for i, height in enumerate(tree_heights[::-1]):
         if height > curr_height:
             curr_height = height
@@ -59,10 +59,31 @@ def part1():
     
     for row in range(1,r+1): # Scan grid per row
         s = get_row(num_row=row, cols=c)
-        visible_trees |= find_visible_trees(list(map(int, list(s))))
+        visible_trees |= find_visible_trees(list(map(int, list(s))), on_row=row)
     for col in range(1,c+1): # Scan grid per column
         s = get_col(num_col=col, rows = r)
-        visible_trees |= find_visible_trees(list(map(int, list(s))))
-    print(f"Number of visible trees: {len(visible_trees)}")
+        visible_trees |= find_visible_trees(list(map(int, list(s))), on_col=col)
+    return visible_trees
     
+    
+def write_visible_trees(visible_trees: set, grid_shape: Tuple[int,int],
+                        file = 'output.txt'):
+    f = open(file, 'w')
+    lines = []
+    r,c = grid_shape
+    for row in range(r):
+        s = ""
+        for col in range(c):
+            s += '*' if (row+1, col+1) in visible_trees else ' '
+        s += '\n'
+        lines.append(s)
+    f.writelines(lines)
+    f.close()
 
+# %%
+
+visible_trees = part1()
+# %%
+write_visible_trees(visible_trees, get_grid_shape(),
+                    file = 'VisibleTrees.txt')
+# %%
