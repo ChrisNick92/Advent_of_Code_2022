@@ -2,13 +2,6 @@
 from typing import Tuple, Optional, Set
 
 point = Tuple[int,int]
-
-class small_rope():
-    def __init__(self, head: Optional[point],
-                 tail: Optional[point] = None):
-        self.head = head
-        self.tail = tail
-
 class rope():
     def __init__(self, length: int = 2):
         self.length = length
